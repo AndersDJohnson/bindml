@@ -16,15 +16,17 @@ do ->
 			opts = _.defaults opts, {
 				tidy: false
 			}
-	
-			$ = cheerio.load templates[name]
-	
+			
+			if window?.jQuery?
+				$top = $(templates[name])
+			else
+				$ = $.load templates[name]
+				$top = $($.dom())
+				
 			keyToValue = (key) ->
 				expr = "$.#{key}"
 				results = jsonPath.eval data, expr
 				return results
-	
-			$top = $($.dom())
 	
 			resolveJSONPaths = (paths) ->
 				resolved = []
@@ -168,7 +170,6 @@ do ->
 		define ["jquery", "underscore", "jsonPath"], factory
 	else if module?.exports?
 		cheerio = require "cheerio-AndersDJohnson"
-		#soupselect = require "cheerio-soupselect"
 		jsonPath = require "JSONPath"
 		_ = require "underscore"
 		module.exports = exports = factory(cheerio, _, jsonPath)
