@@ -13,6 +13,10 @@ module.exports.register = exports.register = register = (name, template) ->
 
 module.exports.render = exports.render = render = (name, data, opts = {}) ->
 	
+	opts = _.defaults opts, {
+		tidy: false
+	}
+	
 	$ = cheerio.load templates[name]
 	
 	keyToValue = (key) ->
@@ -29,15 +33,26 @@ module.exports.render = exports.render = render = (name, data, opts = {}) ->
 			resolved.push path
 		return resolved.join ""
 	
+	getAttrs = ($elem) ->
+		elem = $elem.get(0)
+		attrs = {}
+		if elem.attributes?
+			for attr in elem.attributes
+				attrs[attr.name] = attr.value
+		else if elem.attribs?
+			attrs = elem.attribs
+		return attrs
+	
 	getAttr = ($elem) ->
 		if $elem.attr("data-bind")?
-			attr = "data-bind"
+			return "data-bind"
 		else if $elem.attr("data-with")?
-			attr = "data-with"
+			return "data-with"
 		else if $elem.attr("data-each")?
-			attr = "data-each"
-		else attr = false
-		return attr
+			return "data-each"
+		#else if $elem.attr("data-attr")?
+		#	return "data-attr"
+		return false
 	
 	doIncludes = ($context) ->
 		$includes = $("[data-include]", $context)
@@ -52,16 +67,59 @@ module.exports.render = exports.render = render = (name, data, opts = {}) ->
 				doIncludes $included
 		)
 	
+	fillAttrs = ($elem, scope) ->
+		attrs = getAttrs($elem)
+		for key, value of attrs
+			match = key.match /^data-attr-(.+)$/
+			if match?
+				subscope = scope
+				subscope += "." if scope isnt ""
+				subscope += value
+				val = keyToValue(subscope)[0]
+				$elem.attr(match[1], val)
+				$elem.removeAttr(match[0])
+		$elem.removeAttr("data-attr")
+	
+	doClasses = ($elem, scope) ->
+		value = $elem.attr("data-classes")
+		values = value.split /\s+/
+		for value in values
+			match = value.match /^(.*?)(\?(.*?)(\:(.*))?)?$/
+			if match?
+				property = match[1]
+				subscope = scope
+				subscope += "." if scope isnt ""
+				subscope += property
+				val = keyToValue(subscope)[0]
+				trueClass = match[3]
+				falseClass = match[5]
+				if val
+					if trueClass?
+						$elem.addClass trueClass
+					else
+						$elem.addClass value[0]
+				else if falseClass?
+					$elem.addClass falseClass
+		$elem.removeAttr("data-classes")
+	
 	doScopes = ($contexts, scope="") ->
-		scopeSelector = "[data-with], [data-each], [data-bind]"
+		scopeSelector = "[data-with], [data-each], [data-bind], [data-attr], [data-classes]"
 		$contexts.each((index, elem) ->
 			$context = $(elem)
 			$do = $context.find(scopeSelector).not("[data-processed]").first()
 			while $do.size() > 0
+				
 				attr = getAttr($do)
 				subscope = scope
 				subscope += "." if scope isnt ""
 				subscope += $do.attr(attr)
+				
+				if $do.attr("data-attr")?
+					fillAttrs($do, scope)
+				
+				if $do.attr("data-classes")?
+					doClasses($do, scope)
+				
 				$do.attr("data-processed", "data-processed")
 				switch attr
 					when "data-each"
@@ -71,6 +129,7 @@ module.exports.render = exports.render = render = (name, data, opts = {}) ->
 							$doClone.attr("data-each", subscope)
 							subscopei = subscope + "[#{index}]"
 							$doClone.attr("data-bind", subscopei)
+							fillAttrs($doClone, subscopei)
 							$doClone.attr("data-processed", "data-processed")
 							doScopes($doClone.children(), subscopei)
 							$do.before($doClone)
@@ -80,10 +139,15 @@ module.exports.render = exports.render = render = (name, data, opts = {}) ->
 						val = keyToValue(subscope)[0]
 						$do.html(val)
 						$do.attr("data-bind", subscope)
+						fillAttrs($do, subscope)
 						doScopes($do.children(), subscope)
 					when "data-with"
 						$do.attr(attr, subscope)
+						fillAttrs($do, subscope)
 						doScopes($do.children(), subscope)
+				
+				
+				
 				$do = $context.find(scopeSelector).not("[data-processed]").first()
 		)
 	
@@ -92,5 +156,8 @@ module.exports.render = exports.render = render = (name, data, opts = {}) ->
 	
 	$("[data-processed]").removeAttr("data-processed")
 	
-	return $.tidy()
+	if opts.tidy
+		return $.tidy()
+	else
+		return $.html()
 
