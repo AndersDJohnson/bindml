@@ -29,7 +29,7 @@
         keyToValue = function(key) {
           var expr, results;
           expr = "$." + key;
-          results = jsonPath.eval(data, expr);
+          results = jsonPath(data, expr);
           return results;
         };
         resolveJSONPaths = function(paths) {
@@ -197,7 +197,7 @@
       return define(["jquery", "underscore", "jsonPath"], factory);
     } else if ((typeof module !== "undefined" && module !== null ? module.exports : void 0) != null) {
       cheerio = require("cheerio-AndersDJohnson");
-      jsonPath = require("JSONPath");
+      jsonPath = require("JSONPath").eval;
       _ = require("underscore");
       return module.exports = exports = factory(cheerio, _, jsonPath);
     } else if (typeof window !== "undefined" && window !== null) {

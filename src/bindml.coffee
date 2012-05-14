@@ -27,7 +27,7 @@ do ->
 				
 			keyToValue = (key) ->
 				expr = "$.#{key}"
-				results = jsonPath.eval data, expr
+				results = jsonPath data, expr
 				return results
 	
 			resolveJSONPaths = (paths) ->
@@ -175,7 +175,7 @@ do ->
 		define ["jquery", "underscore", "jsonPath"], factory
 	else if module?.exports?
 		cheerio = require "cheerio-AndersDJohnson"
-		jsonPath = require "JSONPath"
+		jsonPath = require("JSONPath").eval
 		_ = require "underscore"
 		module.exports = exports = factory(cheerio, _, jsonPath)
 	else if window?
