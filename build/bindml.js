@@ -21,6 +21,7 @@
         });
         if ((typeof window !== "undefined" && window !== null ? window.jQuery : void 0) != null) {
           $top = $(templates[name]);
+          if ($top.html() == null) $top = $("<div>" + templates[name] + "</div>");
         } else {
           $ = $.load(templates[name]);
           $top = $($.dom());
