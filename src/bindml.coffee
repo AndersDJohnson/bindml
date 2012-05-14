@@ -157,11 +157,14 @@ do ->
 			doScopes $top
 	
 			$("[data-processed]").removeAttr("data-processed")
-	
-			if opts.tidy and $.tidy?
-				return $.tidy()
-			else
-				return $.html()
+			
+			if window?.jQuery?
+				return $top.html()
+			else # cheerio
+				if opts.tidy and $.tidy?
+					return $.tidy()
+				else
+					return $.html()
 		
 		return exports
 	

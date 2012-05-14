@@ -180,10 +180,14 @@
         doIncludes($top);
         doScopes($top);
         $("[data-processed]").removeAttr("data-processed");
-        if (opts.tidy && ($.tidy != null)) {
-          return $.tidy();
+        if ((typeof window !== "undefined" && window !== null ? window.jQuery : void 0) != null) {
+          return $top.html();
         } else {
-          return $.html();
+          if (opts.tidy && ($.tidy != null)) {
+            return $.tidy();
+          } else {
+            return $.html();
+          }
         }
       };
       return exports;
