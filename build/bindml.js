@@ -4,15 +4,16 @@
     var cheerio, exports, factory, jsonPath, name, _;
     name = "bindml";
     factory = function($, _, jsonPath) {
-      var register, render, templates, tokens;
+      var exports, register, render, templates, tokens;
+      exports = {};
       tokens = {
         local: '$$'
       };
       templates = {};
-      module.exports.register = exports.register = register = function(name, template) {
+      exports.register = register = function(name, template) {
         return templates[name] = template;
       };
-      return module.exports.render = exports.render = render = function(name, data, opts) {
+      exports.render = render = function(name, data, opts) {
         var $top, doClasses, doIncludes, doScopes, fillAttrs, getAttr, getAttrs, keyToValue, resolveJSONPaths;
         if (opts == null) opts = {};
         opts = _.defaults(opts, {
@@ -181,6 +182,7 @@
           return $.html();
         }
       };
+      return exports;
     };
     if (typeof define !== "undefined" && define !== null) {
       return define(["jquery", "underscore", "jsonPath"], factory);

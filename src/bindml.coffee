@@ -2,15 +2,16 @@ do ->
 	name = "bindml"
 	
 	factory = ($, _, jsonPath) ->
+		exports = {}
 		
 		tokens =
 			local: '$$'
 
 		templates = {}
-		module.exports.register = exports.register = register = (name, template) ->
+		exports.register = register = (name, template) ->
 			templates[name] = template
 
-		module.exports.render = exports.render = render = (name, data, opts = {}) ->
+		exports.render = render = (name, data, opts = {}) ->
 	
 			opts = _.defaults opts, {
 				tidy: false
@@ -159,6 +160,8 @@ do ->
 				return $.tidy()
 			else
 				return $.html()
+		
+		return exports
 	
 	# universal module wrapper (CommonJS, AMD/RequireJS, and plain browser support)
 	if define?
