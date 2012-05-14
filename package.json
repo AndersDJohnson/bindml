@@ -1,0 +1,8 @@
+{
+    "name": "bindml",
+    "author": "Anders D. Johnson <AndersDJohnson@gmail.com>",
+    "description": "A DOM-based templating library based on data binding.",
+    "keywords": ["Templating", "Template", "DOM", "Binding"],
+    "version": "0.1.0",
+    "main": "./build/bindml"
+}

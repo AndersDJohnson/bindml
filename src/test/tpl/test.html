@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+	<head>
+		<title data-bind="title"></title>
+	</head>
+	<body>
+		<div data-include="nested"></div>
+		<div id="foo" data-with="body">
+			<div data-bind="content"></div>
+			<ul>
+				<li data-each="items">
+					<span data-bind="name"></span>
+					<ul>
+						<li data-each="children">
+							<!-- hey -->
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<div id="bar" data-with="body">
+			<div data-with="items">
+				<div data-bind="[0].name"></div>
+			</div>
+		</div>
+	</body>
+</html>
