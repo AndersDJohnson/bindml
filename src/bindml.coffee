@@ -19,7 +19,8 @@ do ->
 			
 			if window?.jQuery?
 				$top = $(templates[name])
-				unless $top.html()?
+				html = $top.html()
+				if not html? or html is ""
 					$top = $("<div>#{templates[name]}</div>")
 			else
 				$ = $.load templates[name]

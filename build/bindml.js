@@ -14,14 +14,17 @@
         return templates[name] = template;
       };
       exports.render = render = function(name, data, opts) {
-        var $top, doClasses, doIncludes, doScopes, fillAttrs, getAttr, getAttrs, keyToValue, resolveJSONPaths;
+        var $top, doClasses, doIncludes, doScopes, fillAttrs, getAttr, getAttrs, html, keyToValue, resolveJSONPaths;
         if (opts == null) opts = {};
         opts = _.defaults(opts, {
           tidy: false
         });
         if ((typeof window !== "undefined" && window !== null ? window.jQuery : void 0) != null) {
           $top = $(templates[name]);
-          if ($top.html() == null) $top = $("<div>" + templates[name] + "</div>");
+          html = $top.html();
+          if (!(html != null) || html === "") {
+            $top = $("<div>" + templates[name] + "</div>");
+          }
         } else {
           $ = $.load(templates[name]);
           $top = $($.dom());
