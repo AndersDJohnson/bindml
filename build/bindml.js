@@ -19,14 +19,18 @@
         opts = _.defaults(opts, {
           tidy: false
         });
-        $ = cheerio.load(templates[name]);
+        if ((typeof window !== "undefined" && window !== null ? window.jQuery : void 0) != null) {
+          $top = $(templates[name]);
+        } else {
+          $ = $.load(templates[name]);
+          $top = $($.dom());
+        }
         keyToValue = function(key) {
           var expr, results;
           expr = "$." + key;
           results = jsonPath.eval(data, expr);
           return results;
         };
-        $top = $($.dom());
         resolveJSONPaths = function(paths) {
           var path, resolved, _i, _len;
           resolved = [];
