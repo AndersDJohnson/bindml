@@ -4,7 +4,7 @@
     "description": "A DOM-based templating library based on data binding.",
     "keywords": ["Templating", "Template", "DOM", "Binding"],
     "version": "0.1.0",
-    "main": "./build/bindml"
+    "main": "./build/bindml",
     "engines": {
         "node": ">= 0.4.7"
     },
